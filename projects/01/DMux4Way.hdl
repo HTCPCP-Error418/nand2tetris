@@ -16,5 +16,18 @@ CHIP DMux4Way {
     OUT a, b, c, d;
 
     PARTS:
-    // Put your code here:
+      Not (in=sel[1], out=notSel1);
+      Not (in=sel[0], out=notSel0);
+
+      // Figure out which output line is selected
+      And (a=notSel1, b=notSel0, out=sela);
+      And (a=notSel1, b=sel[0], out=selb);
+      And (a=sel[1], b=notSel0, out=selc);
+      And (a=sel[1], b=sel[0], out=seld);
+
+      // Write input to output
+      And (a=in, b=sela, out=a);
+      And (a=in, b=selb, out=b);
+      And (a=in, b=selc, out=c);
+      And (a=in, b=seld, out=d);
 }

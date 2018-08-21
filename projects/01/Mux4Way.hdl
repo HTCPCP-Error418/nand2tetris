@@ -22,7 +22,7 @@
       And (a=sel[1], b=notSel0, out=selc);
       And (a=sel[1], b=sel[0], out=seld);
 
-      // Check if any result in 1
+      // Check if any result is 1
       And (a=a, b=sela, out=outa);
       And (a=b, b=selb, out=outb);
       And (a=c, b=selc, out=outc);

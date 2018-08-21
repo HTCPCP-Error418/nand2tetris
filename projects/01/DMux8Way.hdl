@@ -16,5 +16,27 @@ CHIP DMux8Way {
     OUT a, b, c, d, e, f, g, h;
 
     PARTS:
-    // Put your code here:
+      Not (in=sel[2], out=notSel2);
+      Not (in=sel[1], out=notSel1);
+      Not (in=sel[0], out=notSel0);
+
+      // Figure out which output line is selected
+      And3Way (a=notSel2, b=notSel1, c=notSel0, out=sela);
+      And3Way (a=notSel2, b=notSel1, c=sel[0], out=selb);
+      And3Way (a=notSel2, b=sel[1], c=notSel0, out=selc);
+      And3Way (a=notSel2, b=sel[1], c=sel[0], out=seld);
+      And3Way (a=sel[2], b=notSel1, c=notSel0, out=sele);
+      And3Way (a=sel[2], b=notSel1, c=sel[0], out=self);
+      And3Way (a=sel[2], b=sel[1], c=notSel0, out=selg);
+      And3Way (a=sel[2], b=sel[1], c=sel[0], out=selh);
+
+      // Write input to output
+      And (a=in, b=sela, out=a);
+      And (a=in, b=selb, out=b);
+      And (a=in, b=selc, out=c);
+      And (a=in, b=seld, out=d);
+      And (a=in, b=sele, out=e);
+      And (a=in, b=self, out=f);
+      And (a=in, b=selg, out=g);
+      And (a=in, b=selh, out=h);
 }
