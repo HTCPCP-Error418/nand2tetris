@@ -1,7 +1,7 @@
-// Helper chip for the Mux4Way16 chip
+// Mux4Way helper chip
 
 /**
- * 4-way 16-bit multiplexor:
+ * 4-way multiplexor:
  * out = a if sel == 00
  *       b if sel == 01
  *       c if sel == 10
@@ -13,5 +13,23 @@
     OUT out;
 
     PARTS:
-      
+      Not (in=sel[1], out=notSel1);
+      Not (in=sel[0], out=notSel0);
+
+      // Figure out which input should go out
+      And (a=notSel1, b=notSel0, out=sela);
+      And (a=notSel1, b=sel[0], out=selb);
+      And (a=sel[1], b=notSel0, out=selc);
+      And (a=sel[1], b=sel[0], out=seld);
+
+      // Check if any result in 1
+      And (a=a, b=sela, out=outa);
+      And (a=b, b=selb, out=outb);
+      And (a=c, b=selc, out=outc);
+      And (a=d, b=seld, out=outd);
+
+      // Output 1 if any of above are 1
+      Or (a=outa, b=outb, out=tmp0);
+      Or (a=outc, b=tmp0, out=tmp1);
+      Or (a=outd, b=tmp1, out=out);
  }
