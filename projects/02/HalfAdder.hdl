@@ -9,9 +9,10 @@
 
 CHIP HalfAdder {
     IN a, b;    // 1-bit inputs
-    OUT sum,    // Right bit of a + b 
+    OUT sum,    // Right bit of a + b
         carry;  // Left bit of a + b
 
     PARTS:
-    // Put you code here:
+      And (a=a, b=b, out=carry);    //carry is only set if both a and b are 1
+      Xor (a=a, b=b, out=sum);      //sum is only set if only a or b is 1
 }

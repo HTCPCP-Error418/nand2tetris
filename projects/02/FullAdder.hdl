@@ -13,5 +13,14 @@ CHIP FullAdder {
         carry;   // Left bit of a + b + c
 
     PARTS:
-    // Put you code here:
+      // calculate carry bit
+      And (a=a, b=b, out=aAndb);
+      And (a=b, b=c, out=bAndc);
+      And (a=a, b=c, out=aAndc);
+      Or4Way (a=aAndb, b=bAndc, c=aAndc, d=false, out=carry);
+
+      // calculate sum bit (chained Xor outputs 1 when odd number of inputs)
+      // sum = 1 when odd number of inputs = 1
+      Xor (a=a, b=b, out=tmp0);
+      Xor (a=tmp0, b=c, out=sum);
 }

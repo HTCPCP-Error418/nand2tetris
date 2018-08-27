@@ -1,0 +1,15 @@
+// 4-way OR helper chip
+
+/**
+  * Executes OR logic with 4 inputs
+  */
+
+CHIP Or4Way {
+    IN a,b,c,d;
+    OUT out;
+
+    PARTS:
+      Or (a=a, b=b, out=aOrb);
+      Or (a=c, b=d, out=cOrd);
+      Or (a=aOrb, b=cOrd, out=out);
+}
