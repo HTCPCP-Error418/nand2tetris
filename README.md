@@ -1,2 +1,2 @@
 # nand2tetris
-Stuff from the NAND2Tetris course
+My stuff from the NAND2Tetris course
