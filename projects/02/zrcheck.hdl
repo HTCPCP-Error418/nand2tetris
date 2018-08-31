@@ -1,0 +1,12 @@
+// calculate the zr flag from the ALU
+
+CHIP zrcheck {
+    IN in[16];
+    OUT out;
+
+    PARTS:
+        Or8Way (in=in[0..7], out=tmp0);
+        Or8Way (in=in[8..15], out=tmp1);
+        Or (a=tmp0, b=tmp1, out=flip);
+        Not (in=flip, out=out);
+}

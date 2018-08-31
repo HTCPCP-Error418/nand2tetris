@@ -7,7 +7,7 @@
  * The ALU (Arithmetic Logic Unit).
  * Computes one of the following functions:
  * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
- * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
+ * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs,
  * according to 6 input bits denoted zx,nx,zy,ny,f,no.
  * In addition, the ALU computes two 1-bit outputs:
  * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
@@ -27,8 +27,8 @@
 // if (out < 0) set ng = 1
 
 CHIP ALU {
-    IN  
-        x[16], y[16],  // 16-bit inputs        
+    IN
+        x[16], y[16],  // 16-bit inputs
         zx, // zero the x input?
         nx, // negate the x input?
         zy, // zero the y input?
@@ -36,11 +36,52 @@ CHIP ALU {
         f,  // compute out = x + y (if 1) or x & y (if 0)
         no; // negate the out output?
 
-    OUT 
+    OUT
         out[16], // 16-bit output
         zr, // 1 if (out == 0), 0 otherwise
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+        // zx -- if zx is set, out=b (false)
+        Mux16 (a=x, b=false, sel=zx, out=outzx);
+
+        // nx -- if nx is set, out=b (notOutzx)
+        Not16 (in=outzx, out=notOutzx);
+        Mux16 (a=outzx, b=notOutzx, sel=nx, out=donex);
+
+        // zy -- same as zx
+        Mux16 (a=y, b=false, sel=zy, out=outzy);
+
+        // ny -- same as nx
+        Not16 (in=outzy, out=notOutzy);
+        Mux16 (a=outzy, b=notOutzy, sel=ny, out=doney);
+
+        // f -- if set, x+y, else x&y
+        Add16 (a=donex, b=doney, out=xAddy);
+        And16 (a=donex, b=doney, out=xAndy);
+        Mux16 (a=xAndy, b=xAddy, sel=f, out=donef);
+
+        // no -- if set, out=b (notDonef)
+        Not16 (in=donef, out=notDonef);
+        Mux16 (a=donef, b=notDonef, sel=no, out=out0);      //output, but need for flags
+/*
+        // zr -- if out=1, zr=0
+        Or8Way (in=out0[0..7], out=tmp0);
+        Or8Way (in=out0[8..15], out=tmp1);
+        Or (a=tmp0, b=tmp1, out=doneOr);    // if a or b == 1, out is 1
+        Not (in=doneOr, out=zr);            // if a or b == 1, out is 0
+
+        // ng -- if out<0, ng=1
+        // can only express up to +/- 255 with 16-bit 2's compliment (bit 9=256)
+        // if any bits after 9 (8 when starting at 0) are 1, number is negative
+        Or8Way (in=out0[8..15], out=ng);
+*/
+        // zr
+        zrcheck (in=out0, out=zr);
+
+        //ng
+        ngcheck (in=out0, out=ng);
+
+        // output out0
+        Or16 (a=out0, b=false, out=out);
 }
