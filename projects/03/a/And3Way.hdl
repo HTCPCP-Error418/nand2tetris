@@ -1,0 +1,19 @@
+// And3Way helper chip
+
+/**
+  * 3-way And:
+  * out = 1 if:
+  *   a == 1
+  *   b == 1
+  *   c == 1
+  * else out = 0
+  */
+
+CHIP And3Way {
+    IN a, b, c;
+    OUT out;
+
+    PARTS:
+      And (a=a, b=b, out=tmp0);
+      And (a=c, b=tmp0, out=out);
+}

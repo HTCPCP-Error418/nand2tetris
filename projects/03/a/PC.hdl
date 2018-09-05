@@ -16,5 +16,22 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+        //increment prev
+        Inc16 (in=prev, out=incPrev);
+
+        //if inc is set, use incremented prev (default is no)
+        Mux16 (a=prev, b=incPrev, sel=inc, out=tmp0);
+
+        //if load is set, use new in (default is no)
+        Mux16 (a=tmp0, b=in, sel=load, out=tmp1);
+
+        //if reset is set, zero value (default is no)
+        Mux16 (a=tmp1, b=false, sel=reset, out=tmp2);
+
+        //always load a new value into register
+        //if no flags were set, old value hasn't changed
+        Register (in=tmp2, load=true, out=prev);
+
+        //output prev (can't have two outs from the chip)
+        Or16 (a=prev, b=false, out=out);
 }

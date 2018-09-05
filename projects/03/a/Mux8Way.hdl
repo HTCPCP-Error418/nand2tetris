@@ -1,0 +1,53 @@
+// Mux8Way helper chip
+
+/**
+ * 8-way multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       c if sel == 010
+ *       d if sel == 011
+ *       e if sel == 100
+ *       f if sel == 101
+ *       g if sel == 110
+ *       h if sel == 111
+ */
+
+ CHIP Mux8Way {
+    IN a, b, c, d, e,
+       f, g, h, sel[3];
+    OUT out;
+
+    PARTS:
+      Not (in=sel[2], out=notSel2);
+      Not (in=sel[1], out=notSel1);
+      Not (in=sel[0], out=notSel0);
+
+      // Figure out which input should go out
+      And3Way (a=notSel2, b=notSel1, c=notSel0, out=sela);
+      And3Way (a=notSel2, b=notSel1, c=sel[0], out=selb);
+      And3Way (a=notSel2, b=sel[1], c=notSel0, out=selc);
+      And3Way (a=notSel2, b=sel[1], c=sel[0], out=seld);
+      And3Way (a=sel[2], b=notSel1, c=notSel0, out=sele);
+      And3Way (a=sel[2], b=notSel1, c=sel[0], out=self);
+      And3Way (a=sel[2], b=sel[1], c=notSel0, out=selg);
+      And3Way (a=sel[2], b=sel[1], c=sel[0], out=selh);
+
+      //check if any result is 1
+      And (a=a, b=sela, out=outa);
+      And (a=b, b=selb, out=outb);
+      And (a=c, b=selc, out=outc);
+      And (a=d, b=seld, out=outd);
+      And (a=e, b=sele, out=oute);
+      And (a=f, b=self, out=outf);
+      And (a=g, b=selg, out=outg);
+      And (a=h, b=selh, out=outh);
+
+      // Output 1 if any of above are 1
+      Or (a=outa, b=outb, out=tmp0);
+      Or (a=outc, b=tmp0, out=tmp1);
+      Or (a=outd, b=tmp1, out=tmp2);
+      Or (a=oute, b=tmp2, out=tmp3);
+      Or (a=outf, b=tmp3, out=tmp4);
+      Or (a=outg, b=tmp4, out=tmp5);
+      Or (a=outh, b=tmp5, out=out);
+ }
