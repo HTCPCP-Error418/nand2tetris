@@ -27,7 +27,7 @@
  */
 typedef struct sym_node_t {
 	char				*sym_name;	//symbol name
-	unsigned long		val;		//symbol value (line number, mem address, pre-defined value)
+	unsigned int		val;		//symbol value (line number, mem address, pre-defined value)
 	struct sym_node_t	*next;		//pointer to next node in linked list
 } sym_node_t;
 
@@ -50,6 +50,9 @@ typedef struct c_node_t {
  * CAVEAT: Will not return any value and is currently not useful/used in the
  * HACK assembler. The function has not been removed, as it may be capable of
  * providing a cleaner version of "get_bin()" with some modification.
+ * FUTURE NOTE: providing an array or allocated memory did not work, as there
+ * was no good way to implement a counter to place the values in the correct
+ * spot.
  */
 void print_binary(unsigned int decimal);
 
@@ -74,7 +77,10 @@ void get_bin(unsigned int decimal, int bin_arr[15]);
  * new node.
  * MAY REQUIRE MORE WORK -- UNTESTED FUNCTION
  */
-sym_node add_sym(void);
+void add_sym(char *name, int len, unsigned int value);
+
+
+void print_symbol_table(void);
 
 
 /*
@@ -85,15 +91,6 @@ sym_node add_sym(void);
  * MAY REQUIRE MORE WORK -- UNTESTED FUNCTION
  */
 bool free_mem(void);
-
-
-/*
- * Function that prints the usage information for the compiled program and
- * exits with an exit code of 0. This function was added to simplify the
- * main code while conducting testing and may be removed when the HACK
- * assembler is finished to make way for a more comprehensive message.
- */
-void usage(void);
 
 
 /*

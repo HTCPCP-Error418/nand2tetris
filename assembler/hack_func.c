@@ -10,11 +10,11 @@
 
 /*
  * Global variable definitions
- * "sym_tbl" is the root node of the Symbol Table linked list
- * "c_tbl" is the root node of the C-instruction Translation Table linked list
+ * "sym_head" is the root node of the Symbol Table linked list
+ * "c_head" is the root node of the C-instruction Translation Table linked list
  */
-sym_node_t *sym_tbl = NULL;			//CHECK IF THIS IS THE CORRECT WAY TO CREATE A ROOT NODE
-c_node_t *c_tbl = NULL;
+sym_node_t *sym_head = NULL;			//CHECK IF THIS IS THE CORRECT WAY TO CREATE A ROOT NODE
+c_node_t *c_head = NULL;
 
 
 /*
@@ -44,8 +44,8 @@ void print_binary(unsigned int decimal) {
  * binary representation. RECURSIVE FUNCTION IS A PREFERRED ALTERNATIVE, IF
  * POSSIBLE.
  */
-void get_bin(unsigned int decimal, int bin_arr[15]) {
-	for (int i = 14; i >= 0; i--) {
+void get_bin(unsigned int decimal, int bin_arr[15]) {	//THIS MAY BE IMPROVED BY JUST PASSING A POINTER
+	for (int i = 14; i >= 0; i--) {						//TO BIN_ARR INSTEAD OF PASSING THE ARRAY
 		if (decimal < 1) {
 			bin_arr[i] = 0;
 		} else {
@@ -55,20 +55,38 @@ void get_bin(unsigned int decimal, int bin_arr[15]) {
 	}
 }
 
+//Symbol Table functions
 
 /*
  * Function to create a new Symbol Table node, returning a pointer to the
  * new node.
  * MAY REQUIRE MORE WORK -- UNTESTED FUNCTION
  */
-sym_node_t * add_sym(void) {
+void add_sym(char *name, int len, unsigned int value) {
 	sym_node_t *n = calloc(1, sizeof(sym_node_t));
-	if (!n) {
+	if (n == NULL) {
 		mem_error();
 	}
-	n->next = NULL;
-	return n;
+	n->sym_name = calloc(len, sizeof(char));
+	strncpy(n->sym_name, name, len);
+
+	n->val = value;
+
+	n->next = sym_head;
+	sym_head = n;
 }
+
+
+void print_symbol_table(void) {
+	sym_node_t *trav = sym_head;
+	while (trav != NULL) {
+		printf("\t%s = %u\n", trav->sym_name, trav->val);
+		trav = trav->next;
+	}
+}
+
+//C-instruction Translation table functions
+
 
 
 /*
@@ -79,29 +97,31 @@ sym_node_t * add_sym(void) {
  * MAY REQUIRE MORE WORK -- UNTESTED FUNCTION
  */
 bool free_mem(void) {
-	sym_node_t *sym_tmp = sym_tbl;		//traversal pointer for sym_tbl
-	while (sym_tbl) {
-		sym_tmp = sym_tbl;
-		sym_tbl = sym_tbl->next;
-		if (sym_tmp->sym_name) {		//if symbol name is set, free that, too
-			free(sym_tmp->sym_name);
-			sym_tmp->sym_name = NULL;
+	sym_node_t *sym_trav = sym_head;		//traversal pointer for Symbol Table linked list
+	while (sym_head != NULL) {
+		sym_trav = sym_head;
+		sym_head = sym_head->next;
+		if (sym_trav->sym_name != NULL) {		//if symbol name is set, free that, too
+			free(sym_trav->sym_name);
+			sym_trav->sym_name = NULL;
 		}
-		sym_tmp->next = NULL;
-		free(sym_tmp);
+		sym_trav->next = NULL;
+		free(sym_trav);
 	}
+	printf("\tAll Symbol Nodes freed.\n");
 
-	c_node_t *c_tmp = c_tbl;			//traversal pointer for c_tbl
-	while (c_tbl) {
-		c_tmp = c_tbl;
-		c_tbl = c_tbl->next;
-		if (c_tmp->inst_name) {
-			free(c_tmp->inst_name);
-			c_tmp->inst_name = NULL;
+	c_node_t *c_trav = c_head;			//traversal pointer for C-instruction linked list
+	while (c_head != NULL) {
+		c_trav = c_head;
+		c_head = c_head->next;
+		if (c_trav->inst_name != NULL) {
+			free(c_trav->inst_name);
+			c_trav->inst_name = NULL;
 		}
-		c_tmp->next = NULL;
-		free(c_tmp);
+		c_trav->next = NULL;
+		free(c_trav);
 	}
+	printf("\tAll C-instruction Nodes freed.\n");
 
 	return true;
 }
@@ -120,17 +140,5 @@ bool free_mem(void) {
 void mem_error(void) {
 	printf("Error allocating memory\n");
 	free_mem();
-	exit(1)
-}
-
-
-/*
- * Function that prints the usage information for the compiled program and
- * exits with an exit code of 0. This function was added to simplify the
- * main code while conducting testing and may be removed when the HACK
- * assembler is finished to make way for a more comprehensive message.
- */
-void usage(void) {
-	printf("Usage: assembler [] []\n");
-	exit(0);
+	exit(1);
 }
