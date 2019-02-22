@@ -17,7 +17,7 @@
  * The first three bits of a 16-bit C-instruction are constant (all 1). The
  * decimal value for the first three bits is 57344 and is defined here for
  * readability purposes and to avoid creating another global variable.
- * DOES THIS GET DEFINED HERE, OR IN HACK_FUNC.C? -- CHECK
+ * 							DOES THIS GET DEFINED HERE, OR IN HACK_FUNC.C? -- CHECK
  */
 #define CHEADER 57344
 
