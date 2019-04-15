@@ -1,0 +1,6 @@
+Return Codes:
+	Return 0: Exit Success
+	Return 1: Command Line Options Error
+	Return 2: Error Opening File
+	Return 3: Error Allocating Memory
+	Return 99: Other Error
