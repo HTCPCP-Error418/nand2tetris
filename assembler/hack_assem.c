@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
 	char *infile;	//file name for input file
 	char *outfile;	//file name for output file
 	char tmpfile[] = "hack_assem_output_tmp_file.tmp" //file name for temp file
+	//REPLACE TMPFILE[] WITH "FILE *tmpfile(void)" FUNCTION IN STDIO.H
 
 	//parse command line options, start at argv[1], since program name is argv[0]
 	for (int i = 1; i < argc; i++) {
@@ -42,7 +43,14 @@ int main(int argc, char *argv[]) {
 	//open input file (read only), check that file opened successfully
 	FILE *inptr = fopen(infile, "r");
 	if (inptr == NULL) {
-		fprintf(stderr, RED "[!]\tError opening input file:\t%c" RESET "\n", infile);
+		fprintf(stderr, RED "[!]\tError opening input file:\t%s" RESET "\n", infile);
+		return 2;
+	}
+
+	//create/open tmpfile for writing the processed infile to
+	FILE *tmpptr = tmpfile();
+	if (tmpptr == NULL) {
+		fprintf(stderr, RED "[!]\tError opening tmpfile" RESET "\n");
 		return 2;
 	}
 

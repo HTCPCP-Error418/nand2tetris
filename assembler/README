@@ -4,3 +4,5 @@ Return Codes:
 	Return 2: Error Opening File
 	Return 3: Error Allocating Memory
 	Return 99: Other Error
+
+How were decimal values calculated
